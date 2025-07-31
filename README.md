@@ -16,13 +16,15 @@
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     
     <style>
-        body { font-family: 'Noto Sans JP', sans-serif; -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; }
-        .hero-bg { background-color: #F0F4F8; }
+        body { font-family: 'Noto Sans JP', sans-serif; -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; background-color: #F8F9FA; }
+        .hero-bg { background: linear-gradient(to bottom, #EFF6FF, #F8F9FA); }
         .section-title { border-left: 5px solid #3B82F6; padding-left: 1rem; }
-        .focus-ring:focus-within, input:focus { box-shadow: 0 0 0 2px #3B82F6; outline: none; }
+        .focus-ring:focus-within, input:focus, textarea:focus { box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5); outline: none; }
+        .card-hover { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.08); }
     </style>
 </head>
-<body class="bg-gray-50">
+<body>
     <div id="root"></div>
 
     <script type="text/babel">
@@ -35,12 +37,17 @@
         const CloseIcon = (props) => <svg {...props} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>;
         const ChevronLeftIcon = (props) => <svg {...props} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>;
         const ChevronRightIcon = (props) => <svg {...props} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>;
+        const HeartIcon = (props) => <svg {...props} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.5l1.318-1.182a4.5 4.5 0 116.364 6.364L12 21l-7.682-7.682a4.5 4.5 0 010-6.364z" /></svg>;
 
         // --- 静的データ ---
+        // ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+        // ★ ここを編集してください ★
         // GITHUBのユーザー名とリポジトリ名をあなたのものに書き換えてください
-        const GITHUB_USER = "YOUR_USERNAME"; // 例: "tana-k"
-        const GITHUB_REPO = "YOUR_REPOSITORY"; // 例: "kokoro-app-images"
-        const GITHUB_BRANCH = "main";
+        const GITHUB_USER = "YOUR_USERNAME"; // 例: "tanaka-ichiro"
+        const GITHUB_REPO = "YOUR_REPOSITORY"; // 例: "kokoro-app-assets"
+        const GITHUB_BRANCH = "main"; // 通常は "main" のままで問題ありません
+        // ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+
         const createImageUrl = (fileName) => `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/${GITHUB_BRANCH}/${encodeURIComponent(fileName)}`;
 
         const STATIC_DOCTORS = [
@@ -83,7 +90,7 @@
             };
             
             return (
-                <div className="w-full max-w-3xl mx-auto bg-white">
+                <div className="w-full max-w-4xl mx-auto bg-white shadow-xl">
                     <div className="min-h-screen pb-20"> {/* フッター分の余白 */}
                         {renderScreen()}
                     </div>
@@ -94,12 +101,12 @@
 
         // --- フッターナビゲーション ---
         const Footer = ({ active, onNavigate }) => (
-            <footer className="fixed bottom-0 left-0 right-0 max-w-3xl mx-auto flex justify-around p-2 border-t bg-white/80 backdrop-blur-sm shadow-inner z-10">
+            <footer className="fixed bottom-0 left-0 right-0 max-w-4xl mx-auto flex justify-around p-2 border-t bg-white/90 backdrop-blur-sm shadow-inner z-10">
                 <button onClick={() => onNavigate('HOME')} className={`w-1/2 flex flex-col items-center pt-1 pb-1 transition-colors duration-200 ${active === 'HOME' ? 'text-blue-600' : 'text-gray-500 hover:text-blue-600'}`}>
                     <HomeIcon className="h-6 w-6" /><span className="text-xs font-bold">相談・料金</span>
                 </button>
                 <button onClick={() => onNavigate('CALENDAR')} className={`w-1/2 flex flex-col items-center pt-1 pb-1 transition-colors duration-200 ${active === 'CALENDAR' ? 'text-blue-600' : 'text-gray-500 hover:text-blue-600'}`}>
-                    <CalendarIcon className="h-6 w-6" /><span className="text-xs font-bold">カレンダー</span>
+                    <CalendarIcon className="h-6 w-6" /><span className="text-xs font-bold">セルフケア</span>
                 </button>
             </footer>
         );
@@ -109,62 +116,62 @@
             const bookingFormRef = useRef(null);
             return (
                 <div>
-                    <header className="hero-bg text-center p-8 sm:p-12">
+                    <header className="hero-bg text-center p-8 sm:p-16">
                         <img src={createImageUrl('ストレスのロゴ.jpg')} alt="こころの相談窓口 ロゴ" className="w-24 h-24 mx-auto mb-4 rounded-full shadow-lg" onError={(e) => e.target.src='https://placehold.co/96x96/E0E7FF/3730A3?text=ロゴ'}/>
-                        <h1 className="text-3xl sm:text-4xl font-bold text-gray-800">ひとりで悩んでいませんか？</h1>
-                        <p className="mt-4 text-lg text-gray-600">心の専門家が、あなたの悩みに寄り添います。</p>
-                        <button onClick={() => bookingFormRef.current.scrollIntoView()} className="mt-8 bg-blue-600 text-white font-bold py-3 px-8 rounded-full text-lg hover:bg-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl">
+                        <h1 className="text-3xl sm:text-5xl font-bold text-gray-800 leading-tight">ひとりで悩んでいませんか？</h1>
+                        <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">経験豊富な専門家が、あなたの心に優しく寄り添います。<br/>安心して話せる場所が、ここにあります。</p>
+                        <button onClick={() => bookingFormRef.current.scrollIntoView()} className="mt-8 bg-blue-600 text-white font-bold py-4 px-10 rounded-full text-lg hover:bg-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
                             今すぐ専門家に相談する
                         </button>
                     </header>
-                    <main className="p-4 sm:p-8 space-y-16">
+                    <main className="p-4 sm:p-10 space-y-20">
                         <section>
-                            <h2 className="text-2xl font-bold text-gray-800 section-title">こんなお悩みありませんか？</h2>
-                            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                                <div className="space-y-4">
+                            <h2 className="text-3xl font-bold text-gray-800 section-title">こんなお悩みありませんか？</h2>
+                            <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+                                <div className="space-y-5">
                                     {CHECKLIST_ITEMS.map(item => (
-                                        <div key={item} className="flex items-center">
-                                            <CheckCircleIcon className="h-6 w-6 text-green-500 mr-3 flex-shrink-0" />
-                                            <span className="text-gray-700">{item}</span>
+                                        <div key={item} className="flex items-center bg-white p-4 rounded-lg shadow-sm">
+                                            <CheckCircleIcon className="h-7 w-7 text-green-500 mr-4 flex-shrink-0" />
+                                            <span className="text-gray-700 text-lg">{item}</span>
                                         </div>
                                     ))}
                                 </div>
                                 <img src={createImageUrl('チェックリスト.jpg')} alt="悩みを抱える人のイラスト" className="rounded-lg shadow-lg object-cover w-full h-full" onError={(e) => e.target.src='https://placehold.co/600x400/E2E8F0/4A5568?text=セルフチェック'}/>
                             </div>
-                            <p className="mt-6 text-gray-600">ひとつでも当てはまったら、それは心が休息を求めているサインかもしれません。専門家に話すことで、気持ちが楽になることがあります。</p>
+                            <p className="mt-8 text-gray-600 text-center">ひとつでも当てはまったら、心が休息を求めているサインかもしれません。<br/>専門家に話すことで、気持ちが楽になることがあります。</p>
                         </section>
                         <section>
-                            <h2 className="text-2xl font-bold text-gray-800 section-title">ストレスとの上手な付き合い方</h2>
-                            <div className="mt-6 flex flex-col md:flex-row gap-8 items-center">
-                                <img src={createImageUrl('ストレスの説明.png')} alt="リラックスしている人のイラスト" className="rounded-lg shadow-lg md:w-1/3" onError={(e) => e.target.src='https://placehold.co/400x400/E2E8F0/4A5568?text=ストレスの説明'}/>
-                                <div className="md:w-2/3">
-                                    <p className="text-gray-700 leading-relaxed">ストレスは、外部からの刺激によって心や体に生じる反応です。適度なストレスは集中力を高めるなど良い効果もありますが、過度なストレスは心身の不調につながります。大切なのは、ストレスの原因を理解し、自分に合った解消法を見つけること。カウンセリングは、そのための有効な手段の一つです。</p>
+                            <h2 className="text-3xl font-bold text-gray-800 section-title">私たちの想い</h2>
+                            <div className="mt-8 flex flex-col md:flex-row gap-10 items-center">
+                                <img src={createImageUrl('ストレスの説明.png')} alt="リラックスしている人のイラスト" className="rounded-lg shadow-lg md:w-2/5" onError={(e) => e.target.src='https://placehold.co/400x400/E2E8F0/4A5568?text=ストレスの説明'}/>
+                                <div className="md:w-3/5">
+                                    <p className="text-gray-700 text-lg leading-relaxed">私たちは、誰もが心の健康を当たり前に大切にできる社会を目指しています。ストレスは特別なことではありません。身体の不調と同じように、心の不調にも専門家のサポートが必要です。<br/><br/>あなたのペースで、あなたの言葉で、ゆっくりとお話をお聞かせください。私たちは、あなたが自分らしい毎日を取り戻すためのお手伝いをします。</p>
                                 </div>
                             </div>
                         </section>
                         <section>
-                            <h2 className="text-2xl font-bold text-gray-800 section-title">専門家のご紹介</h2>
-                            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <h2 className="text-3xl font-bold text-gray-800 section-title">専門家のご紹介</h2>
+                            <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-10">
                                 {STATIC_DOCTORS.map(doctor => (
-                                    <div key={doctor.id} className="bg-white p-6 rounded-xl shadow-lg text-center">
-                                        <img src={doctor.image} alt={`${doctor.nickname}の顔写真`} className="w-32 h-32 mx-auto rounded-full mb-4 object-cover" onError={(e) => e.target.src='https://placehold.co/128x128/CBD5E0/4A5568?text=先生'}/>
-                                        <h3 className="text-xl font-bold text-gray-900">{doctor.nickname}</h3>
-                                        <p className="text-blue-600 font-semibold my-1">{doctor.specialty}</p>
-                                        <p className="text-gray-600 mt-3 text-left">{doctor.bio}</p>
+                                    <div key={doctor.id} className="bg-white p-8 rounded-xl shadow-lg text-center card-hover">
+                                        <img src={doctor.image} alt={`${doctor.nickname}の顔写真`} className="w-32 h-32 mx-auto rounded-full mb-5 object-cover ring-4 ring-white shadow-md" onError={(e) => e.target.src='https://placehold.co/128x128/CBD5E0/4A5568?text=先生'}/>
+                                        <h3 className="text-2xl font-bold text-gray-900">{doctor.nickname}</h3>
+                                        <p className="text-blue-600 font-semibold my-2">{doctor.specialty}</p>
+                                        <p className="text-gray-600 mt-4 text-left leading-relaxed">{doctor.bio}</p>
                                     </div>
                                 ))}
                             </div>
                         </section>
                         <section>
-                            <h2 className="text-2xl font-bold text-gray-800 section-title">料金プラン</h2>
+                            <h2 className="text-3xl font-bold text-gray-800 section-title">ご利用料金</h2>
                             <PricingSection />
                         </section>
                         <section ref={bookingFormRef}>
-                            <h2 className="text-2xl font-bold text-gray-800 section-title">オンライン相談 予約フォーム</h2>
+                            <h2 className="text-3xl font-bold text-gray-800 section-title">オンライン相談 予約フォーム</h2>
                             <BookingForm setAppointments={setAppointments} />
                         </section>
                     </main>
-                    <footer className="text-center p-6 bg-gray-800 text-white mt-16">
+                    <footer className="text-center p-8 bg-gray-800 text-white mt-20">
                         <p>&copy; 2025 こころの相談窓口. All Rights Reserved.</p>
                     </footer>
                 </div>
@@ -197,7 +204,7 @@
 
             if (isSubmitted) {
                 return (
-                    <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-6 rounded-lg shadow-md mt-6 text-center">
+                    <div className="bg-green-100 border-l-4 border-green-500 text-green-800 p-6 rounded-lg shadow-md mt-8 text-center">
                         <h3 className="text-xl font-bold">ご予約ありがとうございます</h3>
                         <p className="mt-2">担当者より折り返しご連絡いたしますので、今しばらくお待ちください。</p>
                     </div>
@@ -205,7 +212,7 @@
             }
 
             return (
-                <form onSubmit={handleSubmit} className="mt-6 bg-white p-8 rounded-xl shadow-lg space-y-6">
+                <form onSubmit={handleSubmit} className="mt-8 bg-white p-8 rounded-xl shadow-lg space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">お名前<span className="text-red-500">*</span></label>
@@ -221,7 +228,7 @@
                         <input type="email" id="email" value={email} onChange={e => setEmail(e.target.value)} required className="w-full p-3 border border-gray-300 rounded-lg focus-ring" />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">ご希望の日時</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">ご希望の日時</label>
                         <div className="space-y-3">
                             <input type="datetime-local" value={hope1} onChange={e => setHope1(e.target.value)} required className="w-full p-3 border border-gray-300 rounded-lg focus-ring" title="第1希望（必須）"/>
                             <input type="datetime-local" value={hope2} onChange={e => setHope2(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg focus-ring" title="第2希望"/>
@@ -339,8 +346,8 @@
 
         // --- 料金セクション ---
         const PricingSection = () => (
-            <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-                <div className="bg-white p-8 rounded-xl shadow-lg border-t-4 border-blue-300">
+            <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                <div className="bg-white p-8 rounded-xl shadow-lg border-t-4 border-blue-300 card-hover">
                     <h3 className="text-xl font-bold text-gray-800">お試し相談</h3>
                     <p className="mt-4 text-4xl font-bold text-gray-900">3,000<span className="text-lg font-medium">円</span></p>
                     <p className="text-gray-500">/ 30分</p>
@@ -349,7 +356,7 @@
                         <li><span className="text-green-500 mr-2">✔</span>気軽に相談したい</li>
                     </ul>
                 </div>
-                <div className="bg-white p-8 rounded-xl shadow-lg border-t-4 border-blue-500 md:transform md:scale-105 relative">
+                <div className="bg-white p-8 rounded-xl shadow-xl border-t-4 border-blue-500 md:transform md:scale-105 relative card-hover">
                     <p className="absolute top-0 -translate-y-1/2 left-1/2 -translate-x-1/2 bg-blue-500 text-white text-sm font-bold px-3 py-1 rounded-full">一番人気</p>
                     <h3 className="text-xl font-bold text-gray-800">標準プラン</h3>
                     <p className="mt-4 text-4xl font-bold text-gray-900">5,000<span className="text-lg font-medium">円</span></p>
@@ -359,7 +366,7 @@
                         <li><span className="text-green-500 mr-2">✔</span>継続的なサポート</li>
                     </ul>
                 </div>
-                <div className="bg-white p-8 rounded-xl shadow-lg border-t-4 border-blue-300">
+                <div className="bg-white p-8 rounded-xl shadow-lg border-t-4 border-blue-300 card-hover">
                     <h3 className="text-xl font-bold text-gray-800">月額プラン</h3>
                     <p className="mt-4 text-4xl font-bold text-gray-900">18,000<span className="text-lg font-medium">円</span></p>
                     <p className="text-gray-500">/ 月4回 (50分/回)</p>
@@ -370,16 +377,9 @@
                 </div>
             </div>
         );
-        
-        // --- 料金ページ ---
-        const PricingScreen = () => (
-            <div className="p-4 sm:p-8">
-                <h1 className="text-3xl font-bold text-gray-800 section-title mb-8">料金プラン</h1>
-                <PricingSection />
-            </div>
-        );
 
         ReactDOM.createRoot(document.getElementById('root')).render(<App />);
     </script>
 </body>
 </html>
+F
