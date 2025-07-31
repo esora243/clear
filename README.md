@@ -43,7 +43,7 @@
         const createImageUrl = (fileName) => `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/${GITHUB_BRANCH}/${encodeURIComponent(fileName)}`;
 
         const STATIC_DOCTORS = [
-            { id: 'doc1', nickname: '臨床心理士 高田先生', specialty: '人間関係の悩み・キャリアの不安', image: createImageUrl('女性医師.jpg') },
+            { id: 'doc1', nickname: '臨床心理士 高田先生', specialty: '人間関係の悩み・キャリアの不安', image: createImageUrl(女性医師.jpg) },
             { id: 'doc2', nickname: '精神科専門医 田辺先生', specialty: '気分の落ち込み・不眠・ストレス関連症状', image: 'https://placehold.co/128x128/E0E7FF/3730A3?text=田辺先生' },
         ];
         const CHECKLIST_ITEMS = ["最近、よく眠れない", "仕事や学業に集中できない", "理由もなく気分が落ち込む", "食欲がわかない、または食べ過ぎる", "何事も楽しめなくなった", "将来への不安が強い"];
@@ -109,7 +109,7 @@
             return (
                 <div>
                     <header className="hero-bg text-center p-8 sm:p-16">
-                        <img src={createImageUrl('ストレスのロゴ.jpg')} alt="こころの相談窓口 ロゴ" className="w-24 h-24 mx-auto mb-4 rounded-full shadow-lg" onError={(e) => e.target.src='https://placehold.co/96x96/E0E7FF/3730A3?text=ロゴ'}/>
+                        <img src={createImageUrl(ストレスのロゴ.jpg)} alt="こころの相談窓口 ロゴ" className="w-24 h-24 mx-auto mb-4 rounded-full shadow-lg" onError={(e) => e.target.src='https://placehold.co/96x96/E0E7FF/3730A3?text=ロゴ'}/>
                         <h1 className="text-3xl sm:text-5xl font-bold text-gray-800 leading-tight">ひとりで悩んでいませんか？</h1>
                         <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">経験豊富な専門家が、あなたの心に優しく寄り添います。<br/>安心して話せる場所が、ここにあります。</p>
                         <button onClick={() => bookingFormRef.current.scrollIntoView()} className="mt-8 bg-blue-600 text-white font-bold py-4 px-10 rounded-full text-lg hover:bg-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
