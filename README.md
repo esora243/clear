@@ -32,21 +32,20 @@
         const CheckCircleIcon = (props) => <svg {...props} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
         const CalendarIcon = (props) => <svg {...props} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>;
         const HomeIcon = (props) => <svg {...props} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>;
-        const PriceIcon = (props) => <svg {...props} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v.01M12 6v-1h4.5a1.5 1.5 0 011.5 1.5v1.5a1.5 1.5 0 01-1.5 1.5H12m0-4.5V4m0-1v-1a2 2 0 00-2-2h-1a2 2 0 00-2 2v1h5.5a2.5 2.5 0 012.5 2.5v1.5a2.5 2.5 0 01-2.5 2.5H12m0 0V19a2 2 0 01-2 2h-1a2 2 0 01-2-2v-1h5.5a2.5 2.5 0 002.5-2.5v-1.5a2.5 2.5 0 00-2.5-2.5H12z" /></svg>;
         const CloseIcon = (props) => <svg {...props} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>;
         const ChevronLeftIcon = (props) => <svg {...props} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>;
         const ChevronRightIcon = (props) => <svg {...props} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>;
 
         // --- 静的データ ---
         // GITHUBのユーザー名とリポジトリ名をあなたのものに書き換えてください
-        const GITHUB_USER = "YOUR_USERNAME";
-        const GITHUB_REPO = "YOUR_REPOSITORY";
+        const GITHUB_USER = "YOUR_USERNAME"; // 例: "tana-k"
+        const GITHUB_REPO = "YOUR_REPOSITORY"; // 例: "kokoro-app-images"
         const GITHUB_BRANCH = "main";
         const createImageUrl = (fileName) => `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/${GITHUB_BRANCH}/${encodeURIComponent(fileName)}`;
 
         const STATIC_DOCTORS = [
             { id: 'doc1', nickname: '臨床心理士 高田先生', specialty: '人間関係の悩み・キャリアの不安', image: createImageUrl('女性医師.jpg') },
-            { id: 'doc2', nickname: '精神科専門医 田辺先生', specialty: '気分の落ち込み・不眠・ストレス関連症状', image: 'https://placehold.co/400x400/A0AEC0/FFFFFF?text=田辺先生' },
+            { id: 'doc2', nickname: '精神科専門医 田辺先生', specialty: '気分の落ち込み・不眠・ストレス関連症状', image: 'https://placehold.co/128x128/E0E7FF/3730A3?text=田辺先生' },
         ];
         const CHECKLIST_ITEMS = ["最近、よく眠れない", "仕事や学業に集中できない", "理由もなく気分が落ち込む", "食欲がわかない、または食べ過ぎる", "何事も楽しめなくなった", "将来への不安が強い"];
         const MOODS = { '😄': '快調', '🙂': '良好', '😐': '普通', '😔': '不調', '😭': '絶不調' };
@@ -71,7 +70,7 @@
 
         // --- メインアプリケーション ---
         const App = () => {
-            const [screen, setScreen] = useState('HOME'); // HOME, CALENDAR, PRICING
+            const [screen, setScreen] = useState('HOME'); // HOME, CALENDAR
             const [calendarRecords, setCalendarRecords] = useLocalStorage('calendarRecords', {});
             const [appointments, setAppointments] = useLocalStorage('appointments', []);
 
@@ -79,7 +78,6 @@
                 switch(screen) {
                     case 'HOME': return <HomeScreen setAppointments={setAppointments} />;
                     case 'CALENDAR': return <CalendarScreen records={calendarRecords} setRecords={setCalendarRecords} appointments={appointments} />;
-                    case 'PRICING': return <PricingScreen />;
                     default: return <HomeScreen setAppointments={setAppointments} />;
                 }
             };
@@ -97,14 +95,11 @@
         // --- フッターナビゲーション ---
         const Footer = ({ active, onNavigate }) => (
             <footer className="fixed bottom-0 left-0 right-0 max-w-3xl mx-auto flex justify-around p-2 border-t bg-white/80 backdrop-blur-sm shadow-inner z-10">
-                <button onClick={() => onNavigate('HOME')} className={`w-1/3 flex flex-col items-center pt-1 pb-1 transition-colors duration-200 ${active === 'HOME' ? 'text-blue-600' : 'text-gray-500 hover:text-blue-600'}`}>
-                    <HomeIcon className="h-6 w-6" /><span className="text-xs font-bold">相談する</span>
+                <button onClick={() => onNavigate('HOME')} className={`w-1/2 flex flex-col items-center pt-1 pb-1 transition-colors duration-200 ${active === 'HOME' ? 'text-blue-600' : 'text-gray-500 hover:text-blue-600'}`}>
+                    <HomeIcon className="h-6 w-6" /><span className="text-xs font-bold">相談・料金</span>
                 </button>
-                <button onClick={() => onNavigate('CALENDAR')} className={`w-1/3 flex flex-col items-center pt-1 pb-1 transition-colors duration-200 ${active === 'CALENDAR' ? 'text-blue-600' : 'text-gray-500 hover:text-blue-600'}`}>
+                <button onClick={() => onNavigate('CALENDAR')} className={`w-1/2 flex flex-col items-center pt-1 pb-1 transition-colors duration-200 ${active === 'CALENDAR' ? 'text-blue-600' : 'text-gray-500 hover:text-blue-600'}`}>
                     <CalendarIcon className="h-6 w-6" /><span className="text-xs font-bold">カレンダー</span>
-                </button>
-                <button onClick={() => onNavigate('PRICING')} className={`w-1/3 flex flex-col items-center pt-1 pb-1 transition-colors duration-200 ${active === 'PRICING' ? 'text-blue-600' : 'text-gray-500 hover:text-blue-600'}`}>
-                    <PriceIcon className="h-6 w-6" /><span className="text-xs font-bold">料金</span>
                 </button>
             </footer>
         );
@@ -115,7 +110,7 @@
             return (
                 <div>
                     <header className="hero-bg text-center p-8 sm:p-12">
-                        <img src={createImageUrl('ストレスのロゴ.jpg')} alt="ストレスのロゴ" className="w-24 h-24 mx-auto mb-4 rounded-full shadow-lg" onError={(e) => e.target.src='https://placehold.co/96x96/E2E8F0/4A5568?text=ロゴ'}/>
+                        <img src={createImageUrl('ストレスのロゴ.jpg')} alt="こころの相談窓口 ロゴ" className="w-24 h-24 mx-auto mb-4 rounded-full shadow-lg" onError={(e) => e.target.src='https://placehold.co/96x96/E0E7FF/3730A3?text=ロゴ'}/>
                         <h1 className="text-3xl sm:text-4xl font-bold text-gray-800">ひとりで悩んでいませんか？</h1>
                         <p className="mt-4 text-lg text-gray-600">心の専門家が、あなたの悩みに寄り添います。</p>
                         <button onClick={() => bookingFormRef.current.scrollIntoView()} className="mt-8 bg-blue-600 text-white font-bold py-3 px-8 rounded-full text-lg hover:bg-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl">
@@ -134,14 +129,14 @@
                                         </div>
                                     ))}
                                 </div>
-                                <img src={createImageUrl('チェックリスト.jpg')} alt="チェックリストのイメージ" className="rounded-lg shadow-lg object-cover w-full h-full" onError={(e) => e.target.src='https://placehold.co/600x400/E2E8F0/4A5568?text=セルフチェック'}/>
+                                <img src={createImageUrl('チェックリスト.jpg')} alt="悩みを抱える人のイラスト" className="rounded-lg shadow-lg object-cover w-full h-full" onError={(e) => e.target.src='https://placehold.co/600x400/E2E8F0/4A5568?text=セルフチェック'}/>
                             </div>
                             <p className="mt-6 text-gray-600">ひとつでも当てはまったら、それは心が休息を求めているサインかもしれません。専門家に話すことで、気持ちが楽になることがあります。</p>
                         </section>
                         <section>
                             <h2 className="text-2xl font-bold text-gray-800 section-title">ストレスとの上手な付き合い方</h2>
                             <div className="mt-6 flex flex-col md:flex-row gap-8 items-center">
-                                <img src={createImageUrl('ストレスの説明.png')} alt="ストレスのメカニズムを説明する図" className="rounded-lg shadow-lg md:w-1/3" onError={(e) => e.target.src='https://placehold.co/400x400/E2E8F0/4A5568?text=ストレスの説明'}/>
+                                <img src={createImageUrl('ストレスの説明.png')} alt="リラックスしている人のイラスト" className="rounded-lg shadow-lg md:w-1/3" onError={(e) => e.target.src='https://placehold.co/400x400/E2E8F0/4A5568?text=ストレスの説明'}/>
                                 <div className="md:w-2/3">
                                     <p className="text-gray-700 leading-relaxed">ストレスは、外部からの刺激によって心や体に生じる反応です。適度なストレスは集中力を高めるなど良い効果もありますが、過度なストレスは心身の不調につながります。大切なのは、ストレスの原因を理解し、自分に合った解消法を見つけること。カウンセリングは、そのための有効な手段の一つです。</p>
                                 </div>
@@ -159,6 +154,10 @@
                                     </div>
                                 ))}
                             </div>
+                        </section>
+                        <section>
+                            <h2 className="text-2xl font-bold text-gray-800 section-title">料金プラン</h2>
+                            <PricingSection />
                         </section>
                         <section ref={bookingFormRef}>
                             <h2 className="text-2xl font-bold text-gray-800 section-title">オンライン相談 予約フォーム</h2>
@@ -338,40 +337,45 @@
             );
         };
 
+        // --- 料金セクション ---
+        const PricingSection = () => (
+            <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                <div className="bg-white p-8 rounded-xl shadow-lg border-t-4 border-blue-300">
+                    <h3 className="text-xl font-bold text-gray-800">お試し相談</h3>
+                    <p className="mt-4 text-4xl font-bold text-gray-900">3,000<span className="text-lg font-medium">円</span></p>
+                    <p className="text-gray-500">/ 30分</p>
+                    <ul className="mt-6 space-y-2 text-gray-600">
+                        <li><span className="text-green-500 mr-2">✔</span>初めての方におすすめ</li>
+                        <li><span className="text-green-500 mr-2">✔</span>気軽に相談したい</li>
+                    </ul>
+                </div>
+                <div className="bg-white p-8 rounded-xl shadow-lg border-t-4 border-blue-500 md:transform md:scale-105 relative">
+                    <p className="absolute top-0 -translate-y-1/2 left-1/2 -translate-x-1/2 bg-blue-500 text-white text-sm font-bold px-3 py-1 rounded-full">一番人気</p>
+                    <h3 className="text-xl font-bold text-gray-800">標準プラン</h3>
+                    <p className="mt-4 text-4xl font-bold text-gray-900">5,000<span className="text-lg font-medium">円</span></p>
+                    <p className="text-gray-500">/ 50分</p>
+                    <ul className="mt-6 space-y-2 text-gray-600">
+                        <li><span className="text-green-500 mr-2">✔</span>じっくり話したい方</li>
+                        <li><span className="text-green-500 mr-2">✔</span>継続的なサポート</li>
+                    </ul>
+                </div>
+                <div className="bg-white p-8 rounded-xl shadow-lg border-t-4 border-blue-300">
+                    <h3 className="text-xl font-bold text-gray-800">月額プラン</h3>
+                    <p className="mt-4 text-4xl font-bold text-gray-900">18,000<span className="text-lg font-medium">円</span></p>
+                    <p className="text-gray-500">/ 月4回 (50分/回)</p>
+                    <ul className="mt-6 space-y-2 text-gray-600">
+                        <li><span className="text-green-500 mr-2">✔</span>定期的なカウンセリング</li>
+                        <li><span className="text-green-500 mr-2">✔</span>最もお得なプラン</li>
+                    </ul>
+                </div>
+            </div>
+        );
+        
         // --- 料金ページ ---
         const PricingScreen = () => (
             <div className="p-4 sm:p-8">
                 <h1 className="text-3xl font-bold text-gray-800 section-title mb-8">料金プラン</h1>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-                    <div className="bg-white p-8 rounded-xl shadow-lg border-t-4 border-blue-300">
-                        <h2 className="text-xl font-bold text-gray-800">お試し相談</h2>
-                        <p className="mt-4 text-4xl font-bold text-gray-900">3,000<span className="text-lg font-medium">円</span></p>
-                        <p className="text-gray-500">/ 30分</p>
-                        <ul className="mt-6 space-y-2 text-gray-600">
-                            <li><span className="text-green-500 mr-2">✔</span>初めての方におすすめ</li>
-                            <li><span className="text-green-500 mr-2">✔</span>気軽に相談したい</li>
-                        </ul>
-                    </div>
-                    <div className="bg-white p-8 rounded-xl shadow-lg border-t-4 border-blue-500 transform scale-105">
-                        <p className="absolute top-0 -translate-y-1/2 left-1/2 -translate-x-1/2 bg-blue-500 text-white text-sm font-bold px-3 py-1 rounded-full">一番人気</p>
-                        <h2 className="text-xl font-bold text-gray-800">標準プラン</h2>
-                        <p className="mt-4 text-4xl font-bold text-gray-900">5,000<span className="text-lg font-medium">円</span></p>
-                        <p className="text-gray-500">/ 50分</p>
-                        <ul className="mt-6 space-y-2 text-gray-600">
-                            <li><span className="text-green-500 mr-2">✔</span>じっくり話したい方</li>
-                            <li><span className="text-green-500 mr-2">✔</span>継続的なサポート</li>
-                        </ul>
-                    </div>
-                    <div className="bg-white p-8 rounded-xl shadow-lg border-t-4 border-blue-300">
-                        <h2 className="text-xl font-bold text-gray-800">月額プラン</h2>
-                        <p className="mt-4 text-4xl font-bold text-gray-900">18,000<span className="text-lg font-medium">円</span></p>
-                        <p className="text-gray-500">/ 月4回 (50分/回)</p>
-                        <ul className="mt-6 space-y-2 text-gray-600">
-                            <li><span className="text-green-500 mr-2">✔</span>定期的なカウンセリング</li>
-                            <li><span className="text-green-500 mr-2">✔</span>最もお得なプラン</li>
-                        </ul>
-                    </div>
-                </div>
+                <PricingSection />
             </div>
         );
 
