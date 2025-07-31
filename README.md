@@ -3,55 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>心のアプリ</title>
+    <meta name="description" content="ストレスや心の不調について、専門家（臨床心理士・精神科専門医）に相談できるオンライン窓口です。簡単なセルフチェックや、日々の心の記録も行えます。">
+    <title>心のオンライン相談窓口 - 専門家によるカウンセリング予約</title>
     
-    <!-- スタイルシート (Tailwind CSS) と Google Fonts を読み込みます -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
     
-    <!-- Reactライブラリを読み込みます -->
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    
-    <!-- JSX (HTMLのような記法) をブラウザで解釈するためのBabelを読み込みます -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     
     <style>
-        body { font-family: 'Noto Sans JP', sans-serif; -webkit-tap-highlight-color: transparent; }
-        .modal-enter-active { transition: all 200ms ease-in-out; }
-        .modal-exit-active { transition: all 200ms ease-in-out; }
-        .modal-enter { opacity: 0; transform: translateY(20px); }
-        .modal-enter-active { opacity: 1; transform: translateY(0); }
-        .modal-exit { opacity: 1; transform: translateY(0); }
-        .modal-exit-active { opacity: 0; transform: translateY(20px); }
+        body { font-family: 'Noto Sans JP', sans-serif; -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; }
+        .hero-bg { background-color: #F0F4F8; }
+        .section-title { border-left: 5px solid #3B82F6; padding-left: 1rem; }
+        .focus-ring:focus-within, input:focus { box-shadow: 0 0 0 2px #3B82F6; outline: none; }
     </style>
 </head>
-<body class="bg-gray-100">
-    <!-- Reactアプリケーションがこの div の中に描画されます -->
+<body class="bg-gray-50">
     <div id="root"></div>
 
-    <!-- ここから下がアプリケーション本体のJavaScript (React) コードです -->
     <script type="text/babel">
         const { useState, useEffect, useMemo, useRef } = React;
 
-        // --- 静的データ（本来はAPIから取得） ---
-        const STATIC_DOCTORS = [
-            { id: 'doc1', nickname: '佐藤 先生', specialty: '臨床心理士', bio: 'あなたの心に寄り添い、共に歩んでいきたいです。どんな小さなお悩みでも、お気軽にご相談ください。' },
-            { id: 'doc2', nickname: '鈴木 先生', specialty: '精神科専門医', bio: '現代社会でのストレスは様々です。仕事の悩みを専門的な観点からサポートします。' },
-            { id: 'doc3', nickname: '高橋 先生', specialty: '公認心理師', bio: '良い睡眠は心の健康の第一歩。あなたの睡眠サイクルを整えるお手伝いをします。' },
-        ];
-
-        // --- 定数とアイコン ---
-        const MOODS = { '😄': { label: 'とても良い' }, '🙂': { label: '良い' }, '😐': { label: '普通' }, '😔': { label: '不調' }, '😭': { label: 'とても不調' } };
-        const ACTIVITIES = { '🚶': '散歩', '💊': '服薬', '☀️': '日光浴', '📖': '読書', '💪': '運動', '💬': '会話' };
+        // --- アイコン ---
+        const CheckCircleIcon = (props) => <svg {...props} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
         const CalendarIcon = (props) => <svg {...props} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>;
-        const SearchIcon = (props) => <svg {...props} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>;
-        const VideoCameraIcon = (props) => <svg {...props} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>;
+        const HomeIcon = (props) => <svg {...props} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>;
         const CloseIcon = (props) => <svg {...props} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>;
         const ChevronLeftIcon = (props) => <svg {...props} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>;
         const ChevronRightIcon = (props) => <svg {...props} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>;
+
+        // --- 静的データ ---
+        const STATIC_DOCTORS = [
+            { id: 'doc1', nickname: '臨床心理士 高田先生', specialty: '人間関係の悩み・キャリアの不安', image: 'https://raw.githubusercontent.com/user/repo/main/女性医師.jpg' },
+            { id: 'doc2', nickname: '精神科専門医 田辺先生', specialty: '気分の落ち込み・不眠・ストレス関連症状', image: 'https://placehold.co/400x400/A0AEC0/FFFFFF?text=田辺先生' },
+        ];
+        const CHECKLIST_ITEMS = ["最近、よく眠れない", "仕事や学業に集中できない", "理由もなく気分が落ち込む", "食欲がわかない、または食べ過ぎる", "何事も楽しめなくなった", "将来への不安が強い"];
+        const MOODS = { '😄': '快調', '🙂': '良好', '😐': '普通', '😔': '不調', '😭': '絶不調' };
 
         // --- ローカルストレージ用カスタムフック ---
         const useLocalStorage = (key, initialValue) => {
@@ -59,70 +50,190 @@
                 try {
                     const item = window.localStorage.getItem(key);
                     return item ? JSON.parse(item) : initialValue;
-                } catch (error) {
-                    console.error(error);
-                    return initialValue;
-                }
+                } catch (error) { return initialValue; }
             });
             const setValue = (value) => {
                 try {
                     const valueToStore = value instanceof Function ? value(storedValue) : value;
                     setStoredValue(valueToStore);
                     window.localStorage.setItem(key, JSON.stringify(valueToStore));
-                } catch (error) {
-                    console.error(error);
-                }
+                } catch (error) { console.error(error); }
             };
             return [storedValue, setValue];
         };
 
         // --- メインアプリケーション ---
         const App = () => {
-            const [screen, setScreen] = useState('CALENDAR');
-            const [selectedDoctor, setSelectedDoctor] = useState(null);
+            const [screen, setScreen] = useState('HOME'); // HOME, CALENDAR
             const [calendarRecords, setCalendarRecords] = useLocalStorage('calendarRecords', {});
             const [appointments, setAppointments] = useLocalStorage('appointments', []);
 
-            const navigateToBooking = (doctor) => {
-                setSelectedDoctor(doctor);
-                setScreen('BOOKING');
-            };
-
             const renderScreen = () => {
                 switch(screen) {
-                    case 'CALENDAR': return <CalendarScreen records={calendarRecords} setRecords={setCalendarRecords} />;
-                    case 'DOCTOR_LIST': return <DoctorListScreen onSelectDoctor={navigateToBooking} />;
-                    case 'BOOKING': return <BookingScreen doctor={selectedDoctor} appointments={appointments} setAppointments={setAppointments} onBack={() => setScreen('DOCTOR_LIST')} />;
-                    case 'APPOINTMENTS': return <AppointmentsScreen appointments={appointments} />;
-                    default: return <CalendarScreen records={calendarRecords} setRecords={setCalendarRecords} />;
+                    case 'HOME': return <HomeScreen setAppointments={setAppointments} />;
+                    case 'CALENDAR': return <CalendarScreen records={calendarRecords} setRecords={setCalendarRecords} appointments={appointments} />;
+                    default: return <HomeScreen setAppointments={setAppointments} />;
                 }
             };
             
             return (
-                <div className="w-full h-screen max-w-lg mx-auto bg-gray-100 flex flex-col">
-                    <main className="flex-1 overflow-y-auto">{renderScreen()}</main>
+                <div className="w-full max-w-3xl mx-auto bg-white">
+                    <div className="min-h-screen">
+                        {renderScreen()}
+                    </div>
                     <Footer active={screen} onNavigate={setScreen} />
                 </div>
             );
         };
 
-        // --- フッター ---
+        // --- フッターナビゲーション ---
         const Footer = ({ active, onNavigate }) => (
-            <footer className="flex justify-around p-2 border-t bg-white shadow-inner sticky bottom-0">
-                <button onClick={() => onNavigate('CALENDAR')} className={`w-1/3 flex flex-col items-center pt-1 pb-1 transition-colors duration-200 ${active === 'CALENDAR' ? 'text-blue-600' : 'text-gray-500'}`}><CalendarIcon className="h-6 w-6" /><span className="text-xs font-bold">カレンダー</span></button>
-                <button onClick={() => onNavigate('DOCTOR_LIST')} className={`w-1/3 flex flex-col items-center pt-1 pb-1 transition-colors duration-200 ${['DOCTOR_LIST', 'BOOKING'].includes(active) ? 'text-blue-600' : 'text-gray-500'}`}><SearchIcon className="h-6 w-6" /><span className="text-xs font-bold">専門家を探す</span></button>
-                <button onClick={() => onNavigate('APPOINTMENTS')} className={`w-1/3 flex flex-col items-center pt-1 pb-1 transition-colors duration-200 ${active === 'APPOINTMENTS' ? 'text-blue-600' : 'text-gray-500'}`}><VideoCameraIcon className="h-6 w-6" /><span className="text-xs font-bold">予約一覧</span></button>
+            <footer className="sticky bottom-0 flex justify-around p-2 border-t bg-white shadow-inner z-10">
+                <button onClick={() => onNavigate('HOME')} className={`w-1/2 flex flex-col items-center pt-1 pb-1 transition-colors duration-200 ${active === 'HOME' ? 'text-blue-600' : 'text-gray-500 hover:text-blue-600'}`}>
+                    <HomeIcon className="h-6 w-6" /><span className="text-xs font-bold">相談する</span>
+                </button>
+                <button onClick={() => onNavigate('CALENDAR')} className={`w-1/2 flex flex-col items-center pt-1 pb-1 transition-colors duration-200 ${active === 'CALENDAR' ? 'text-blue-600' : 'text-gray-500 hover:text-blue-600'}`}>
+                    <CalendarIcon className="h-6 w-6" /><span className="text-xs font-bold">カレンダー</span>
+                </button>
             </footer>
         );
 
-        // --- カレンダー関連コンポーネント ---
-        const CalendarScreen = ({ records, setRecords }) => {
+        // --- ホーム（相談）ページ ---
+        const HomeScreen = ({ setAppointments }) => {
+            const bookingFormRef = useRef(null);
+            return (
+                <div>
+                    <header className="hero-bg text-center p-8 sm:p-12">
+                        <img src="https://raw.githubusercontent.com/user/repo/main/ストレスのロゴ.jpg" alt="ストレスのロゴ" className="w-24 h-24 mx-auto mb-4 rounded-full shadow-lg" onError={(e) => e.target.src='https://placehold.co/96x96/E2E8F0/4A5568?text=ロゴ'}/>
+                        <h1 className="text-3xl sm:text-4xl font-bold text-gray-800">ひとりで悩んでいませんか？</h1>
+                        <p className="mt-4 text-lg text-gray-600">心の専門家が、あなたの悩みに寄り添います。</p>
+                        <button onClick={() => bookingFormRef.current.scrollIntoView()} className="mt-8 bg-blue-600 text-white font-bold py-3 px-8 rounded-full text-lg hover:bg-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl">
+                            今すぐ専門家に相談する
+                        </button>
+                    </header>
+                    <main className="p-4 sm:p-8 space-y-16">
+                        <section>
+                            <h2 className="text-2xl font-bold text-gray-800 section-title">こんなお悩みありませんか？</h2>
+                            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                                <div className="space-y-4">
+                                    {CHECKLIST_ITEMS.map(item => (
+                                        <div key={item} className="flex items-center">
+                                            <CheckCircleIcon className="h-6 w-6 text-green-500 mr-3 flex-shrink-0" />
+                                            <span className="text-gray-700">{item}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                                <img src="https://raw.githubusercontent.com/user/repo/main/チェックリスト.jpg" alt="チェックリストのイメージ" className="rounded-lg shadow-lg object-cover w-full h-full" onError={(e) => e.target.src='https://placehold.co/600x400/E2E8F0/4A5568?text=セルフチェック'}/>
+                            </div>
+                            <p className="mt-6 text-gray-600">ひとつでも当てはまったら、それは心が休息を求めているサインかもしれません。専門家に話すことで、気持ちが楽になることがあります。</p>
+                        </section>
+                        <section>
+                            <h2 className="text-2xl font-bold text-gray-800 section-title">ストレスとの上手な付き合い方</h2>
+                            <div className="mt-6 flex flex-col md:flex-row gap-8 items-center">
+                                <img src="https://raw.githubusercontent.com/user/repo/main/ストレスの説明.png" alt="ストレスのメカニズムを説明する図" className="rounded-lg shadow-lg md:w-1/3" onError={(e) => e.target.src='https://placehold.co/400x400/E2E8F0/4A5568?text=ストレスの説明'}/>
+                                <div className="md:w-2/3">
+                                    <p className="text-gray-700 leading-relaxed">ストレスは、外部からの刺激によって心や体に生じる反応です。適度なストレスは集中力を高めるなど良い効果もありますが、過度なストレスは心身の不調につながります。大切なのは、ストレスの原因を理解し、自分に合った解消法を見つけること。カウンセリングは、そのための有効な手段の一つです。</p>
+                                </div>
+                            </div>
+                        </section>
+                        <section>
+                            <h2 className="text-2xl font-bold text-gray-800 section-title">専門家のご紹介</h2>
+                            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+                                {STATIC_DOCTORS.map(doctor => (
+                                    <div key={doctor.id} className="bg-white p-6 rounded-xl shadow-lg text-center">
+                                        <img src={doctor.image} alt={`${doctor.nickname}の顔写真`} className="w-32 h-32 mx-auto rounded-full mb-4 object-cover" onError={(e) => e.target.src='https://placehold.co/128x128/CBD5E0/4A5568?text=先生'}/>
+                                        <h3 className="text-xl font-bold text-gray-900">{doctor.nickname}</h3>
+                                        <p className="text-blue-600 font-semibold my-1">{doctor.specialty}</p>
+                                        <p className="text-gray-600 mt-3 text-left">{doctor.bio}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+                        <section ref={bookingFormRef}>
+                            <h2 className="text-2xl font-bold text-gray-800 section-title">オンライン相談 予約フォーム</h2>
+                            <BookingForm setAppointments={setAppointments} />
+                        </section>
+                    </main>
+                    <footer className="text-center p-6 bg-gray-800 text-white mt-16">
+                        <p>&copy; 2025 心のオンライン相談窓口. All Rights Reserved.</p>
+                    </footer>
+                </div>
+            );
+        };
+        
+        // --- 予約フォーム ---
+        const BookingForm = ({ setAppointments }) => {
+            const [name, setName] = useState('');
+            const [phone, setPhone] = useState('');
+            const [email, setEmail] = useState('');
+            const [hope1, setHope1] = useState('');
+            const [hope2, setHope2] = useState('');
+            const [hope3, setHope3] = useState('');
+            const [isSubmitted, setIsSubmitted] = useState(false);
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                if(!name || !phone || !email || !hope1) {
+                    alert("氏名、電話番号、メールアドレス、および第1希望日時は必須です。");
+                    return;
+                }
+                const newAppointments = [hope1, hope2, hope3].filter(Boolean).map(hopeDate => ({
+                    id: `app_${Date.now()}_${Math.random()}`,
+                    hopeDate: hopeDate
+                }));
+                setAppointments(prev => [...prev, ...newAppointments]);
+                setIsSubmitted(true);
+            };
+
+            if (isSubmitted) {
+                return (
+                    <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-6 rounded-lg shadow-md mt-6 text-center">
+                        <h3 className="text-xl font-bold">ご予約ありがとうございます</h3>
+                        <p className="mt-2">担当者より折り返しご連絡いたしますので、今しばらくお待ちください。</p>
+                    </div>
+                );
+            }
+
+            return (
+                <form onSubmit={handleSubmit} className="mt-6 bg-white p-8 rounded-xl shadow-lg space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">お名前<span className="text-red-500">*</span></label>
+                            <input type="text" id="name" value={name} onChange={e => setName(e.target.value)} required className="w-full p-3 border border-gray-300 rounded-lg focus-ring" />
+                        </div>
+                        <div>
+                            <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">電話番号<span className="text-red-500">*</span></label>
+                            <input type="tel" id="phone" value={phone} onChange={e => setPhone(e.target.value)} required className="w-full p-3 border border-gray-300 rounded-lg focus-ring" />
+                        </div>
+                    </div>
+                    <div>
+                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">メールアドレス<span className="text-red-500">*</span></label>
+                        <input type="email" id="email" value={email} onChange={e => setEmail(e.target.value)} required className="w-full p-3 border border-gray-300 rounded-lg focus-ring" />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">ご希望の日時</label>
+                        <div className="space-y-3">
+                            <input type="datetime-local" value={hope1} onChange={e => setHope1(e.target.value)} required className="w-full p-3 border border-gray-300 rounded-lg focus-ring" title="第1希望（必須）"/>
+                            <input type="datetime-local" value={hope2} onChange={e => setHope2(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg focus-ring" title="第2希望"/>
+                            <input type="datetime-local" value={hope3} onChange={e => setHope3(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg focus-ring" title="第3希望"/>
+                        </div>
+                    </div>
+                    <button type="submit" className="w-full bg-blue-600 text-white font-bold py-3 px-8 rounded-lg text-lg hover:bg-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl">
+                        この内容で相談を予約する
+                    </button>
+                </form>
+            );
+        };
+
+        // --- カレンダーページ ---
+        const CalendarScreen = ({ records, setRecords, appointments }) => {
             const [currentDate, setCurrentDate] = useState(new Date());
             const [selectedDate, setSelectedDate] = useState(null);
 
             const handleSaveRecord = (newRecord) => {
                 const recordId = selectedDate.toISOString().split('T')[0];
                 setRecords(prev => ({ ...prev, [recordId]: newRecord }));
+                setSelectedDate(null);
             };
             
             const calendarGrid = useMemo(() => {
@@ -145,6 +256,16 @@
                 return grid;
             }, [currentDate]);
 
+            const appointmentDates = useMemo(() => {
+                const dates = {};
+                appointments.forEach(app => {
+                    const dateStr = new Date(app.hopeDate).toISOString().split('T')[0];
+                    if (!dates[dateStr]) dates[dateStr] = 0;
+                    dates[dateStr]++;
+                });
+                return dates;
+            }, [appointments]);
+
             return (
                 <div className="p-4">
                     {selectedDate && <RecordModal date={selectedDate} record={records[selectedDate.toISOString().split('T')[0]]} onClose={() => setSelectedDate(null)} onSave={handleSaveRecord} />}
@@ -162,13 +283,15 @@
                                 const recordId = date ? date.toISOString().split('T')[0] : null;
                                 const record = recordId ? records[recordId] : null;
                                 const isToday = date && new Date().toDateString() === date.toDateString();
+                                const hasAppointment = recordId && appointmentDates[recordId];
+
                                 return (
-                                    <div key={index} onClick={() => date && setSelectedDate(date)} className={`h-24 sm:h-28 rounded-xl flex flex-col justify-start items-center p-2 cursor-pointer transition duration-300 ${date ? 'bg-white shadow-sm hover:shadow-lg hover:-translate-y-1' : 'bg-transparent'}`}>
+                                    <div key={index} onClick={() => date && setSelectedDate(date)} className={`h-24 sm:h-28 rounded-xl flex flex-col justify-start items-center p-1.5 cursor-pointer transition duration-300 relative ${date ? 'bg-white shadow-sm hover:shadow-md hover:-translate-y-0.5' : 'bg-transparent'}`}>
                                         {date && (
                                             <>
-                                                <span className={`font-bold text-sm ${isToday ? 'text-white bg-blue-500 rounded-full h-6 w-6 flex items-center justify-center' : ''}`}>{date.getDate()}</span>
-                                                <div className="mt-2 text-3xl flex-1 flex items-center justify-center">{record?.mood || ''}</div>
-                                                {record?.activities?.length > 0 && <div className="text-xs text-gray-400 flex flex-wrap justify-center gap-1">{record.activities.map(a => <span key={a}>{a}</span>)}</div>}
+                                                {hasAppointment && <span className="absolute top-1.5 right-1.5 h-2.5 w-2.5 bg-blue-500 rounded-full" title="相談希望日"></span>}
+                                                <span className={`font-semibold text-xs sm:text-sm ${isToday ? 'text-white bg-blue-500 rounded-full h-6 w-6 flex items-center justify-center' : ''}`}>{date.getDate()}</span>
+                                                <div className="mt-1 text-2xl sm:text-3xl flex-1 flex items-center justify-center">{record?.mood || ''}</div>
                                             </>
                                         )}
                                     </div>
@@ -182,140 +305,29 @@
 
         const RecordModal = ({ date, record, onClose, onSave }) => {
             const [mood, setMood] = useState(record?.mood || null);
-            const [selectedActivities, setSelectedActivities] = useState(record?.activities || []);
-            const [journal, setJournal] = useState(record?.journal || '');
-            const [sleepHours, setSleepHours] = useState(record?.sleepHours ?? 7);
-            
             return (
-                <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50" onClick={onClose}>
-                    <div className="bg-white rounded-2xl shadow-2xl w-11/12 max-w-md max-h-[90vh] flex flex-col modal-enter-active" onClick={e => e.stopPropagation()}>
+                <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50 p-4" onClick={onClose}>
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col" onClick={e => e.stopPropagation()}>
                         <header className="p-4 border-b flex justify-between items-center">
-                            <h2 className="font-bold text-lg text-gray-800">{date.toLocaleDateString('ja-JP', { month: 'long', day: 'numeric', weekday: 'short' })}の記録</h2>
+                            <h2 className="font-bold text-lg text-gray-800">{date.toLocaleDateString('ja-JP', { month: 'long', day: 'numeric', weekday: 'short' })}の気分</h2>
                             <button onClick={onClose} className="p-1 rounded-full text-gray-500 hover:bg-gray-200 transition"><CloseIcon className="h-6 w-6" /></button>
                         </header>
-                        <main className="p-5 space-y-6 overflow-y-auto">
-                            <div className="p-4 bg-gray-50 rounded-xl">
-                                <p className="font-semibold mb-3 text-gray-700">今日の気分</p>
-                                <div className="flex justify-around">
-                                    {Object.keys(MOODS).map((emoji) => (
-                                        <button key={emoji} onClick={() => setMood(emoji)} className={`text-4xl p-2 rounded-full transition-transform duration-200 ${mood === emoji ? 'transform scale-125' : 'hover:transform scale-110'}`} title={MOODS[emoji].label}>{emoji}</button>
-                                    ))}
-                                </div>
-                            </div>
-                            <div className="p-4 bg-gray-50 rounded-xl">
-                                <p className="font-semibold mb-3 text-gray-700">今日できたこと</p>
-                                <div className="flex flex-wrap gap-3">
-                                    {Object.keys(ACTIVITIES).map(activity => (
-                                        <button key={activity} onClick={() => setSelectedActivities(prev => prev.includes(activity) ? prev.filter(a => a !== activity) : [...prev, activity])} className={`px-3 py-2 text-sm font-semibold rounded-full border-2 flex items-center gap-2 transition ${selectedActivities.includes(activity) ? 'bg-blue-500 text-white border-blue-500' : 'bg-white text-gray-700 border-gray-300 hover:border-blue-400'}`}>
-                                            <span className="text-lg">{activity}</span> {ACTIVITIES[activity]}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                            <div className="p-4 bg-gray-50 rounded-xl">
-                                <p className="font-semibold mb-2 text-gray-700">睡眠時間: <span className="font-bold text-blue-600">{sleepHours.toFixed(1)}</span>時間</p>
-                                <input type="range" min="0" max="12" step="0.5" value={sleepHours} onChange={(e) => setSleepHours(parseFloat(e.target.value))} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-500" />
-                            </div>
-                            <div className="p-4 bg-gray-50 rounded-xl">
-                                <p className="font-semibold mb-2 text-gray-700">日記 (この端末だけに保存されます)</p>
-                                <textarea value={journal} onChange={e => setJournal(e.target.value)} placeholder="感じたことや出来事を自由にメモ..." className="w-full h-28 p-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition"></textarea>
+                        <main className="p-5 flex-1 flex flex-col justify-center">
+                            <div className="flex justify-around">
+                                {Object.keys(MOODS).map((emoji) => (
+                                    <button key={emoji} onClick={() => setMood(emoji)} className={`text-4xl p-2 rounded-full transition-transform duration-200 ${mood === emoji ? 'transform scale-125 bg-blue-100' : 'hover:transform scale-110'}`} title={MOODS[emoji]}>{emoji}</button>
+                                ))}
                             </div>
                         </main>
                         <footer className="p-4 border-t bg-gray-50 rounded-b-2xl">
-                            <button onClick={() => onSave({ mood, activities: selectedActivities, journal, sleepHours })} className="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-blue-300">記録を保存する</button>
+                            <button onClick={() => onSave({ mood })} className="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl">気分を記録する</button>
                         </footer>
                     </div>
                 </div>
             );
         };
 
-        // --- 予約関連コンポーネント ---
-        const DoctorListScreen = ({ onSelectDoctor }) => (
-            <div className="p-4">
-                <h1 className="text-2xl font-bold mb-4 text-gray-800">専門家を探す</h1>
-                <div className="space-y-4">
-                    {STATIC_DOCTORS.map(doctor => (
-                        <div key={doctor.id} onClick={() => onSelectDoctor(doctor)} className="bg-white p-5 rounded-xl shadow-md cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-                            <h2 className="font-bold text-lg text-gray-900">{doctor.nickname}</h2>
-                            <p className="text-sm text-blue-600 font-semibold my-1">{doctor.specialty}</p>
-                            <p className="text-gray-600 mt-2">{doctor.bio}</p>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        );
-
-        const BookingScreen = ({ doctor, appointments, setAppointments, onBack }) => {
-            const [selectedSlot, setSelectedSlot] = useState(null);
-            
-            const availableSlots = useMemo(() => {
-                const slots = [];
-                const today = new Date();
-                for (let i = 1; i < 8; i++) {
-                    const date = new Date(today);
-                    date.setDate(today.getDate() + i);
-                    slots.push(new Date(date.setHours(10, 0, 0, 0)));
-                    slots.push(new Date(date.setHours(14, 0, 0, 0)));
-                }
-                return slots.filter(slot => !appointments.some(app => new Date(app.appointmentTime).getTime() === slot.getTime() && app.doctorId === doctor.id));
-            }, [doctor.id, appointments]);
-
-            const handleBooking = () => {
-                if (!selectedSlot) { alert("時間を選択してください。"); return; }
-                const newAppointment = {
-                    id: 'app' + Date.now(),
-                    doctorId: doctor.id,
-                    doctorName: doctor.nickname,
-                    appointmentTime: selectedSlot.toISOString(),
-                    status: 'booked'
-                };
-                setAppointments(prev => [...prev, newAppointment]);
-                alert("予約が完了しました。");
-                onBack();
-            };
-
-            return (
-                <div className="p-4">
-                    <button onClick={onBack} className="mb-4 font-bold text-blue-600 flex items-center"><ChevronLeftIcon className="h-5 w-5 mr-1" />専門家一覧に戻る</button>
-                    <div className="bg-white p-5 rounded-xl shadow-md mb-6">
-                        <h1 className="text-2xl font-bold text-gray-900">予約: {doctor.nickname}</h1>
-                        <p className="text-gray-600">{doctor.specialty}</p>
-                    </div>
-                    <h2 className="font-bold mb-3 text-lg text-gray-800">ご希望の時間を選択</h2>
-                    <div className="grid grid-cols-2 gap-3">
-                        {availableSlots.map(slot => (
-                            <button key={slot.toISOString()} onClick={() => setSelectedSlot(slot)} className={`p-3 border rounded-lg text-center transition ${selectedSlot?.getTime() === slot.getTime() ? 'bg-blue-600 text-white shadow-lg' : 'bg-white hover:bg-blue-50'}`}>
-                                {slot.toLocaleString('ja-JP', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                            </button>
-                        ))}
-                    </div>
-                    <button onClick={handleBooking} disabled={!selectedSlot} className="w-full mt-6 bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed">この時間で予約する</button>
-                </div>
-            );
-        };
-
-        const AppointmentsScreen = ({ appointments }) => {
-            const meetLink = "https://meet.google.com/vpz-agds-htd";
-            return (
-                <div className="p-4">
-                    <h1 className="text-2xl font-bold mb-4 text-gray-800">予約一覧</h1>
-                    <div className="space-y-4">
-                        {appointments.length > 0 ? appointments.sort((a,b) => new Date(a.appointmentTime) - new Date(b.appointmentTime)).map(app => (
-                            <div key={app.id} className="bg-white p-5 rounded-xl shadow-md">
-                                <p className="font-bold text-lg text-gray-900">{app.doctorName}</p>
-                                <p className="text-gray-600">{new Date(app.appointmentTime).toLocaleString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
-                                <a href={meetLink} target="_blank" rel="noopener noreferrer" className="block text-center mt-4 w-full bg-green-500 text-white font-bold py-2 rounded-lg hover:bg-green-600 transition flex items-center justify-center gap-2">
-                                    <VideoCameraIcon className="h-5 w-5"/>面談を開始する
-                                </a>
-                            </div>
-                        )) : <p className="text-gray-500 text-center mt-16">予約はまだありません。</p>}
-                    </div>
-                </div>
-            );
-        };
-
         ReactDOM.createRoot(document.getElementById('root')).render(<App />);
-
     </script>
 </body>
 </html>
