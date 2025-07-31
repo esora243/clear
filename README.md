@@ -1,12 +1,9 @@
-<!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>こころの相談窓口</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
@@ -131,7 +128,9 @@
                                         </div>
                                     ))}
                                 </div>
-                                <img src={createImageUrl('チェックリスト.jpg')} alt="悩みを抱える人のイラスト" className="rounded-lg shadow-lg object-cover w-full h-full" onError={(e) => e.target.src='https://placehold.co/600x400/E2E8F0/4A5568?text=セルフチェック'}/>
+                                <div className="flex items-center justify-center">
+                                    <img src={createImageUrl('チェックリスト.jpg')} alt="悩みを抱える人のイラスト" className="rounded-lg shadow-lg object-cover w-full h-auto max-h-[450px]" onError={(e) => e.target.src='https://placehold.co/600x450/E2E8F0/4A5568?text=セルフチェック'}/>
+                                </div>
                             </div>
                             <p className="mt-8 text-gray-600 text-center">ひとつでも当てはまったら、心が休息を求めているサインかもしれません。<br/>専門家に話すことで、気持ちが楽になることがあります。</p>
                         </section>
