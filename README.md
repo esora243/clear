@@ -43,8 +43,8 @@
         // ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
         // ★ ここを編集してください ★
         // GITHUBのユーザー名とリポジトリ名をあなたのものに書き換えてください
-        const GITHUB_USER = "YOUR_USERNAME"; // 例: "tanaka-ichiro"
-        const GITHUB_REPO = "YOUR_REPOSITORY"; // 例: "kokoro-app-assets"
+        const GITHUB_USER = "esora243"; // 例: "tanaka-ichiro"
+        const GITHUB_REPO = "clear"; // 例: "kokoro-app-assets"
         const GITHUB_BRANCH = "main"; // 通常は "main" のままで問題ありません
         // ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
 
